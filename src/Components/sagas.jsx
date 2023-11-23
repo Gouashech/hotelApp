@@ -1,8 +1,11 @@
 import { eventChannel } from 'redux-saga';
+import { loginSuccess, loginFailure } from './actions';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { put, call, take, takeLatest } from 'redux-saga/effects';
 import { onValue, ref } from 'firebase/database';
 import { fetchHotelDataSuccess, fetchHotelDataFailure } from './actions';
 import { db } from '../firebase';
+
 
 // Функція для створення каналу подій
 function createFirebaseChannel() {
@@ -18,7 +21,7 @@ function createFirebaseChannel() {
           ...data[key],
         }));
         emit(fetchHotelDataSuccess(mockData));
-        console.log(mockData)
+        
       } else {
         emit(fetchHotelDataFailure('No data available'));
       }
@@ -38,6 +41,7 @@ function* fetchHotelDataSaga() {
   try {
     while (true) {
       const action = yield take(channel);
+      // console.log('Received data:', action)
       yield put(action);
     }
   } finally {
@@ -46,7 +50,29 @@ function* fetchHotelDataSaga() {
   }
 }
 
+function* loginSaga(action) {
+  const { email, password } = action.payload;
+  const auth = getAuth();
 
+  try {
+    const userCredential = yield call(
+      signInWithEmailAndPassword,
+      auth,
+      email,
+      password
+    );
+    
+    // userCredential.user зберігає інформацію про користувача
+    yield put(loginSuccess(userCredential.user));
+  } catch (error) {
+    yield put(loginFailure(error.message));
+  }
+}
+
+export function* authSaga() {
+  
+  yield takeLatest('LOGIN_REQUEST', loginSaga);
+}
 
 export function* rootSaga() {
   yield takeLatest('FETCH_HOTEL_DATA', fetchHotelDataSaga);
