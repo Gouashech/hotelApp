@@ -1,4 +1,4 @@
-// reducer.js
+
 const initialState = {
     hotelData: [],
     error: null,

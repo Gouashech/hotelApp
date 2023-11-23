@@ -13,14 +13,14 @@ function Home() {
 
   
 
-  // Тут можна відобразити отримані дані
+  
   return (
     <div>
       {error && <p>Error: {error}</p>}
       {hotelData.map((hotel) => (
         <div key={hotel.id}>
           <h2>{hotel.name}</h2>
-          {/* Додайте інші властивості готелю, які ви хочете відобразити */}
+          
         </div>
       ))}
     </div>
