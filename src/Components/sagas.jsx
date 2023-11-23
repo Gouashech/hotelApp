@@ -4,12 +4,12 @@ import { onValue, ref } from 'firebase/database';
 import { fetchHotelDataSuccess, fetchHotelDataFailure } from './actions';
 import { db } from '../firebase';
 
-// Функція для створення каналу подій
+
 function createFirebaseChannel() {
   return eventChannel((emit) => {
     const hotelInfoRef = ref(db, '/');
 
-    // Додайте слухача onValue та відправте дані через канал
+   
     const unsubscribe = onValue(hotelInfoRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -24,14 +24,14 @@ function createFirebaseChannel() {
       }
     });
 
-    // Поверніть функцію для відписки від каналу
+    
     return () => unsubscribe();
   });
   
 }
 
 
-// Сага, яка слухає канал подій
+
 function* fetchHotelDataSaga() {
   const channel = yield call(createFirebaseChannel);
 
@@ -41,7 +41,7 @@ function* fetchHotelDataSaga() {
       yield put(action);
     }
   } finally {
-    // Обробка відписки в разі завершення саги
+    
     channel.close();
   }
 }
